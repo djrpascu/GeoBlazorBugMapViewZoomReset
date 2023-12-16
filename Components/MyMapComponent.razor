@@ -1,0 +1,71 @@
+﻿<h3>MapComponent</h3>
+
+<MapView Longitude="_longitude"
+         Latitude="_latitude"
+         Zoom="_zoom"
+         Style="height: 600px; width: 100%;"
+         OnViewInitialized="OnViewInitialized"
+         OnViewRendered="OnViewRendered">
+    <Map ArcGISDefaultBasemap="streets-vector">
+        <GraphicsLayer @ref="StationGraphicsLayer" />
+    </Map>
+</MapView>
+
+<input type="text" @bind="_latitude" />
+<input type="text" @bind="_longitude" />
+
+@code {
+    double _latitude = 21.447053;
+    double _longitude = -158.018792;
+    double _zoom = 15;
+
+    GraphicsLayer? StationGraphicsLayer;
+    Graphic? StationGraphic;
+
+    #region Blazor Lifecycle Events
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool isFirst)
+    {
+        if (isFirst)
+        {
+            var point = new Point(_longitude, _latitude);
+            await DropPin(point);
+        }
+    }
+
+    #endregion
+
+    #region GeoBlazor Lifecycle Events
+
+    public async Task OnViewInitialized()
+    {
+
+
+
+    }
+
+    public async Task OnViewRendered()
+    {
+
+    }
+
+    #endregion
+
+    public async Task DropPin(Point point)
+    {
+        if (StationGraphic is null)
+        {
+            StationGraphic = new Graphic(point);
+            await StationGraphicsLayer!.Add(StationGraphic);
+        }
+
+        var symbol = new PictureMarkerSymbol("images/pin_charger.png", 37.5, 47, null, null, 23);
+
+        await StationGraphic.SetSymbol(symbol);
+        await StationGraphic.SetGeometry(point);
+    }
+}
